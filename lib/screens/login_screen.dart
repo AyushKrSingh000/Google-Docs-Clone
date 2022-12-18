@@ -1,17 +1,22 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_docs/colors.dart';
+import 'package:google_docs/controller/auth_controller.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends ConsumerWidget {
   const LoginScreen({super.key});
+  void signInWithGoogle(WidgetRef ref) {
+    ref.read(authRepositoryProvider).signInWithGoogle();
+  }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
         body: Center(
             child: ElevatedButton.icon(
-      onPressed: () {},
+      onPressed: () => signInWithGoogle(ref),
       icon: Image(
         image: AssetImage("assets/images/glogo.png"),
         height: 40,
