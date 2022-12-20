@@ -2,6 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_docs/colors.dart';
+import 'package:google_docs/controller/auth_controller.dart';
+import 'package:google_docs/controller/document_controller.dart';
+import 'package:google_docs/controller/socket_controller.dart';
+import 'package:google_docs/models/document_model.dart';
+import 'package:google_docs/widgets/loader.dart';
+
+import '../models/error_model.dart';
 
 class DocumentScreen extends ConsumerStatefulWidget {
   final String id;
@@ -14,7 +21,9 @@ class DocumentScreen extends ConsumerStatefulWidget {
 class _DocumentScreenState extends ConsumerState<DocumentScreen> {
   TextEditingController controller =
       TextEditingController(text: "Untitled Document");
-  final quill.QuillController _controller = quill.QuillController.basic();
+  quill.QuillController? _controller;
+  ErrorModel? errorModel;
+  SocketRepo socketRepo = SocketRepo();
   @override
   void dispose() {
     // TODO: implement dispose
@@ -23,7 +32,58 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    socketRepo.joinRoom(widget.id);
+    fetchDocumentData();
+    socketRepo.changeListener((data) {
+      _controller?.compose(
+          quill.Delta.fromJson(data['Delta']),
+          _controller?.selection ?? const TextSelection.collapsed(offset: 0),
+          quill.ChangeSource.REMOTE);
+    });
+  }
+
+  void fetchDocumentData() async {
+    errorModel = await ref.read(documentRepositoryProvider).getDocumentById(
+          ref.read(userProvider)!.token,
+          widget.id,
+        );
+    if (errorModel!.data != null) {
+      controller.text = (errorModel!.data as DocumentModel).title;
+      print(errorModel!.data.content);
+      _controller = quill.QuillController(
+          document: errorModel!.data.content.isEmpty
+              ? quill.Document()
+              : quill.Document.fromDelta(
+                  quill.Delta.fromJson(errorModel!.data.content)),
+          selection: const TextSelection.collapsed(offset: 0));
+      setState(() {});
+    }
+    _controller!.document.changes.listen((event) {
+      if (event.item3 == quill.ChangeSource.LOCAL) {
+        Map<String, dynamic> map = {
+          'delta': event.item2,
+          'room': widget.id,
+        };
+        socketRepo.typing(map);
+      }
+    });
+  }
+
+  void updateTitle(String title) async {
+    ref.read(documentRepositoryProvider).updateTitle(
+        token: ref.read(userProvider)!.token, id: widget.id, title: title);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_controller == null) {
+      return const Scaffold(
+        body: Loader(),
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kWhiteColor,
@@ -71,6 +131,7 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
                     contentPadding: EdgeInsets.only(
                       left: 10,
                     )),
+                onSubmitted: (value) => updateTitle(value),
               ),
             )
           ]),
@@ -92,7 +153,7 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
             const SizedBox(
               height: 5,
             ),
-            quill.QuillToolbar.basic(controller: _controller),
+            quill.QuillToolbar.basic(controller: _controller!),
             const SizedBox(
               height: 5,
             ),
@@ -105,7 +166,7 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(30.0),
                     child: quill.QuillEditor.basic(
-                      controller: _controller,
+                      controller: _controller!,
                       readOnly: false, // true for view only mode
                     ),
                   ),
