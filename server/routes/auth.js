@@ -6,13 +6,12 @@ const auth =require("../middleware/auth");
 authRouter.post("/api/signup", async (req, res) => {
   try {
     console.log(req.body);
-    const {name, email,photoUrl} = req.body;
+    const {name, email,profilePic} = req.body;
     
     let user = await User.findOne({ email: email });
-    // console.log(user);
     if (user==null) {
       
-      user = new User({ email: email, profilePic: photoUrl, name: name });
+      user = new User({ email: email, profilePic: profilePic, name: name });
       user = await user.save();
       
     }
