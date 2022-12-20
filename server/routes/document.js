@@ -22,7 +22,6 @@ documentRouter.post('/doc/create',auth, async (req, res)=>{
 });
 documentRouter.get('/doc/me',auth, async (req, res)=>{
     try{
-        console.log(req.user);
         let documnents = await Document.find({uid: req.user});
         res.status(200).json(documnents);
 

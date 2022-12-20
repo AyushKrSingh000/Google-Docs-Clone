@@ -39,7 +39,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     return MaterialApp.router(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.amber,
+        primarySwatch: Colors.blue,
       ),
       debugShowCheckedModeBanner: false,
       // home: user == null ? const LoginScreen() : const HomeScreen(),
