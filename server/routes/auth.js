@@ -3,6 +3,7 @@ const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const authRouter = express.Router();
 const auth =require("../middleware/auth");
+
 authRouter.post("/api/signup", async (req, res) => {
   try {
     console.log(req.body);

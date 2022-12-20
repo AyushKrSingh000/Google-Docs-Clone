@@ -3,12 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_docs/controller/auth_controller.dart';
 import 'package:google_docs/models/error_model.dart';
 import 'package:google_docs/routes/router.dart';
-import 'package:google_docs/screens/home_screen.dart';
-import 'package:google_docs/screens/login_screen.dart';
 import 'package:routemaster/routemaster.dart';
 
 void main() {
-  runApp(const ProviderScope(child: const MyApp()));
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerStatefulWidget {
@@ -32,7 +30,6 @@ class _MyAppState extends ConsumerState<MyApp> {
     errorModel = await ref.read(authRepositoryProvider).getUserData();
     if (errorModel != null && errorModel!.data != null) {
       ref.read(userProvider.notifier).update((state) => errorModel!.data);
-      print('hell');
     }
   }
 

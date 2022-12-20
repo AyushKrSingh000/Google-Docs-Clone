@@ -28,7 +28,7 @@ class DocumentRepo {
           body: jsonEncode({
             'createdAt': DateTime.now().millisecondsSinceEpoch,
           }));
-      print(res.statusCode);
+      // print(res.statusCode);
 
       switch (res.statusCode) {
         case 200:
@@ -36,7 +36,39 @@ class DocumentRepo {
               ErrorModel(error: null, data: DocumentModel.fromJson(res.body));
           break;
         default:
-          print('error in document');
+          print('error in docurt');
+      }
+    } catch (e) {
+      error = ErrorModel(error: e.toString(), data: null);
+    }
+    return error;
+  }
+
+  Future<ErrorModel> getDocument(String token) async {
+    ErrorModel error = ErrorModel(error: 'Something went wrong', data: null);
+    try {
+      var res = await _client.get(
+        Uri.parse('$host/doc/me'),
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'x-auth-token': token,
+        },
+      );
+      // print(res.statusCode);
+
+      switch (res.statusCode) {
+        case 200:
+          List<DocumentModel> document = [];
+          // print(res.body);
+          for (int i = 0; i < jsonDecode(res.body).length; i++) {
+            document.add(
+                DocumentModel.fromJson(jsonEncode(jsonDecode(res.body)[i])));
+          }
+          // print(document);
+          error = ErrorModel(error: null, data: document);
+          break;
+        default:
+          print('error in document2');
       }
     } catch (e) {
       error = ErrorModel(error: e.toString(), data: null);
