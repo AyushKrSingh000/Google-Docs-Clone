@@ -47,7 +47,7 @@ class AuthController {
             headers: {
               'Content-Type': 'application/json; charset=utf-8',
             });
-
+        print(res.statusCode);
         switch (res.statusCode) {
           case 200:
             final newUSer = accUser.copyWith(
@@ -58,7 +58,7 @@ class AuthController {
             error = ErrorModel(error: null, data: newUSer);
             break;
           default:
-            print('error');
+            print('error2');
         }
       }
     } catch (e) {
@@ -72,8 +72,7 @@ class AuthController {
         ErrorModel(error: 'Something unexpected Happens', data: null);
     try {
       String? token = await _localStorageRepp.getTotken();
-      // print(token);
-      if (token != null) {
+      if (token != null && token != '') {
         var res = await _client.get(Uri.parse('$host/'), headers: {
           'Content-Type': 'application/json; charset=utf-8',
           'x-auth-token': token,
@@ -92,12 +91,17 @@ class AuthController {
             error = ErrorModel(error: null, data: newUser);
             break;
           default:
-            print('error');
+            print('error3');
         }
       }
     } catch (e) {
       error = ErrorModel(error: e.toString(), data: null);
     }
     return error;
+  }
+
+  void signOut() async {
+    await _googleSignIn.signOut();
+    _localStorageRepp.setTotken('');
   }
 }

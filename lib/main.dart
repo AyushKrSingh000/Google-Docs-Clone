@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_docs/controller/auth_controller.dart';
 import 'package:google_docs/models/error_model.dart';
+import 'package:google_docs/routes/router.dart';
 import 'package:google_docs/screens/home_screen.dart';
 import 'package:google_docs/screens/login_screen.dart';
+import 'package:routemaster/routemaster.dart';
 
 void main() {
   runApp(const ProviderScope(child: const MyApp()));
@@ -37,14 +39,21 @@ class _MyAppState extends ConsumerState<MyApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(userProvider);
-
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.amber,
       ),
-      home: user == null ? const LoginScreen() : const HomeScreen(),
+      debugShowCheckedModeBanner: false,
+      // home: user == null ? const LoginScreen() : const HomeScreen(),
+      routeInformationParser: const RoutemasterParser(),
+      routerDelegate: RoutemasterDelegate(routesBuilder: (context) {
+        final user = ref.watch(userProvider);
+        if (user != null && user.token.isNotEmpty) {
+          return loggedInRoute;
+        }
+        return loggedOutRoute;
+      }),
     );
   }
 }
