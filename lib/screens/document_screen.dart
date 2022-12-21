@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,6 +9,7 @@ import 'package:google_docs/controller/document_controller.dart';
 import 'package:google_docs/controller/socket_controller.dart';
 import 'package:google_docs/models/document_model.dart';
 import 'package:google_docs/widgets/loader.dart';
+import 'package:routemaster/routemaster.dart';
 
 import '../models/error_model.dart';
 
@@ -26,11 +29,12 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
   SocketRepo socketRepo = SocketRepo();
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
+
     controller.dispose();
   }
 
+  Timer? timer;
   @override
   void initState() {
     // TODO: implement initState
@@ -38,11 +42,19 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
     socketRepo.joinRoom(widget.id);
     fetchDocumentData();
     socketRepo.changeListener((data) {
+      // print(data['Delta']);
       _controller?.compose(
           quill.Delta.fromJson(data['Delta']),
           _controller?.selection ?? const TextSelection.collapsed(offset: 0),
           quill.ChangeSource.REMOTE);
     });
+    timer = Timer.periodic(const Duration(seconds: 2), (timer) {
+      socketRepo.autoSave(<String, dynamic>{
+        'Delta': _controller!.document.toDelta(),
+        'room': widget.id,
+      });
+    });
+    timer?.isActive;
   }
 
   void fetchDocumentData() async {
@@ -52,7 +64,7 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
         );
     if (errorModel!.data != null) {
       controller.text = (errorModel!.data as DocumentModel).title;
-      print(errorModel!.data.content);
+      print(controller.text);
       _controller = quill.QuillController(
           document: errorModel!.data.content.isEmpty
               ? quill.Document()
@@ -64,7 +76,7 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
     _controller!.document.changes.listen((event) {
       if (event.item3 == quill.ChangeSource.LOCAL) {
         Map<String, dynamic> map = {
-          'delta': event.item2,
+          'Delta': event.item2,
           'room': widget.id,
         };
         socketRepo.typing(map);
@@ -109,10 +121,17 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
         title: Padding(
           padding: const EdgeInsets.symmetric(vertical: 9.0),
           child: Row(children: [
-            const Image(
-              image: AssetImage('assets/images/google_docs.png'),
-              height: 40,
-              width: 40,
+            GestureDetector(
+              onTap: () {
+                // socketRepo.close();
+                timer?.cancel();
+                Routemaster.of(context).replace('/');
+              },
+              child: const Image(
+                image: AssetImage('assets/images/google_docs.png'),
+                height: 40,
+                width: 40,
+              ),
             ),
             const SizedBox(
               width: 10,

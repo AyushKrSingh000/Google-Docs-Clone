@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const authRouter = require("./routes/auth");
 const documentRouter= require("./routes/document");
 const http=require("http");
-
+const Document = require('./models/document');
 
 const port = process.env.PORT | 3001;
 const app = express();
@@ -24,14 +24,24 @@ const db="mongodb+srv://ayushsingh:ayush1084@cluster0.dsik5ow.mongodb.net/?retry
  io.on('connection',(socket)=>{
    socket.on('join',(documentID)=>{
       socket.join(documentID);
-      console.log('joined');
+      // console.log('joined');
       socket.on('typing',(data)=>{
          socket.broadcast.to(data.room).emit('changes',data);
-         console.log('joined');
+         // console.log('joined');
       })
    })
+   socket.on('save',(data)=>{
+      // console.log(data);
+      savData(data);
+   });
  });
-
+const savData=  async(data)=>{
+   // console.log(data);
+   let document =await Document.findById(data.room);
+   document.content=data.Delta;
+   console.log(document);
+   document= await document.save();
+}
 server.listen(port, "0.0.0.0", function () {
   console.log(`connected at port ${port}`);
 });
