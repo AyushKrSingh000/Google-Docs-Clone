@@ -43,6 +43,7 @@ dependencies:
   routemaster: ^1.0.1
   flutter_quill: ^6.1.7
   socket_io_client: ^1.0.2
+  zoom_widget: ^2.0.0
 
 dev_dependencies:
   flutter_test:

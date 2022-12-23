@@ -47,7 +47,7 @@ class AuthController {
             headers: {
               'Content-Type': 'application/json; charset=utf-8',
             });
-        print(res.statusCode);
+        // print(res.statusCode);
         switch (res.statusCode) {
           case 200:
             final newUSer = accUser.copyWith(

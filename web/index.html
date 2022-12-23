@@ -37,10 +37,25 @@
     var serviceWorkerVersion = null;
   </script>
   <!-- This script adds the flutter initialization JS code -->
+  <!-- <script type="text/javascript">
+    let useHtml = false;
+    if(useHtml) {
+      window.flutterWebRenderer = "html";
+    } else {
+      window.flutterWebRenderer = "canvaskit";
+    }
+  </script> -->
   <script src="flutter.js" defer></script>
   <meta name="google-signin-client_id" content="514885516185-ishtp3h9v8vde0um753pdnrscrnk61ub.apps.googleusercontent.com">
 </head>
 <body>
+  <script>
+    document.addEventListener('wheel', function(e) {
+      e.ctrlKey && e.preventDefault();
+    }, {
+      passive: false,
+    });
+  </script>
   <script>
     window.addEventListener('load', function(ev) {
       // Download main.dart.js
