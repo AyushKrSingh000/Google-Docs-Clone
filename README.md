@@ -15,17 +15,17 @@ A flutter web app which is used to understand the concepts like REST API, SOCKET
 * Socket IO
 * Riverpod For State Mamagement.
 
-# Installation
+# Installation Guide
 To run this project : <br>
 
-# Client App : 
+## Client App : 
 <br>
 
 * ### Move to the project directory then run : `flutter run -d chrome --web-port 3000`
 
 <br>
 
-# Server Side :
+## Server Side :
 
 * ### Move to the `server` directory then run :
 
