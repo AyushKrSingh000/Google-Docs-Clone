@@ -1,16 +1,36 @@
-# google_docs
+# Google Docs Clone
+A flutter web app which is used to understand the concepts like REST API, SOCKETIO, and state management in the apps. 
+<br>
 
-A new Flutter project.
+# Features
+* Unique Link for each Docs File
+* Requires authentication to access files.
+* Easy navigation and responsive app
 
-## Getting Started
+# Technologies Used
+* Flutter
+* Node JS 
+* Express JS
+* MongoDB
+* Socket IO
+* Riverpod For State Mamagement.
 
-This project is a starting point for a Flutter application.
+# Installation
+To run this project : <br>
 
-A few resources to get you started if this is your first Flutter project:
+# Client App : 
+<br>
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+* ### Move to the project directory then run : `flutter run -d chrome --web-port 3000`
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<br>
+
+# Server Side :
+
+* ### Move to the `server` directory then run :
+
+ * ### `npm i` To install the required node modules packages
+ * ### `npm run dev` To start the server
+
+
+
